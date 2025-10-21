@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const value = event.target.dataset.value;
 
         try {
-            const response = await fetch("http://localhost:3000/api/responder", {
+            const response = await fetch("https://srm-backend-qk.onrender.com/api/responder", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ sessionId, key, value })
