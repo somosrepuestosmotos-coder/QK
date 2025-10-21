@@ -1,0 +1,58 @@
+-- Esquema de Base de Datos para la Suite Ejecutiva Digital
+-- Sistema Gestor de Base de Datos: PostgreSQL (compatible con MySQL con ajustes menores en tipos de datos)
+
+-- TABLA 1: sessions
+-- Almacena una entrada única para cada vez que un usuario inicia el proceso del cuestionario.
+-- Esto permite agrupar todas las respuestas de una misma interacción.
+CREATE TABLE sessions (
+    session_id VARCHAR(255) PRIMARY KEY, -- ID único generado en el frontend (ej. 'session_timestamp_randomstr')
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, -- Fecha y hora de inicio del cuestionario
+    completed_at TIMESTAMP WITH TIME ZONE, -- Se actualiza cuando el usuario termina
+    client_name VARCHAR(255) -- Opcional: se podría pedir el nombre al final para asociarlo.
+);
+
+COMMENT ON TABLE sessions IS 'Registra cada interacción única de un usuario con el cuestionario.';
+COMMENT ON COLUMN sessions.session_id IS 'Identificador único para una sesión de cuestionario.';
+COMMENT ON COLUMN sessions.completed_at IS 'Marca de tiempo de cuando se completó el cuestionario.';
+
+
+-- TABLA 2: questions
+-- Almacena las preguntas del cuestionario. Centralizar las preguntas aquí permite
+-- modificarlas sin tener que cambiar el código del frontend.
+CREATE TABLE questions (
+    question_id SERIAL PRIMARY KEY,
+    question_key VARCHAR(100) UNIQUE NOT NULL, -- Clave única para la pregunta (ej. 'main_objective_6m')
+    question_text TEXT NOT NULL, -- El texto completo de la pregunta
+    is_active BOOLEAN DEFAULT TRUE, -- Para activar o desactivar preguntas fácilmente
+    display_order INT -- Para ordenar las preguntas en el frontend
+);
+
+COMMENT ON TABLE questions IS 'Repositorio central de todas las preguntas del cuestionario.';
+COMMENT ON COLUMN questions.question_key IS 'Clave programática para identificar la pregunta.';
+
+
+-- TABLA 3: responses
+-- Tabla principal que almacena cada respuesta individual.
+-- Es el corazón de la captura de datos.
+CREATE TABLE responses (
+    response_id SERIAL PRIMARY KEY,
+    session_id VARCHAR(255) NOT NULL, -- Clave foránea que referencia a la tabla 'sessions'
+    question_key VARCHAR(100) NOT NULL, -- Clave foránea que referencia a la tabla 'questions'
+    answer_value TEXT NOT NULL, -- La respuesta seleccionada por el usuario
+    responded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (session_id) REFERENCES sessions(session_id) ON DELETE CASCADE,
+    FOREIGN KEY (question_key) REFERENCES questions(question_key) ON DELETE CASCADE
+);
+
+COMMENT ON TABLE responses IS 'Almacena cada respuesta individual de un usuario para una sesión específica.';
+COMMENT ON COLUMN responses.session_id IS 'Vincula la respuesta a una sesión de usuario.';
+COMMENT ON COLUMN responses.question_key IS 'Vincula la respuesta a una pregunta específica.';
+COMMENT ON COLUMN responses.answer_value IS 'El contenido de la respuesta seleccionada.';
+
+-- Ejemplo de inserción de preguntas iniciales
+INSERT INTO questions (question_key, question_text, display_order) VALUES
+('main_objective_6m', '¿Cuál es su objetivo principal para los próximos 6 meses?', 1),
+('biggest_challenge', '¿Cuál considera su mayor desafío actualmente?', 2),
+('investment_priority', '¿En qué área priorizaría la inversión?', 3),
+('start_timeline', '¿Cuál es su cronograma ideal para iniciar este plan piloto?', 4);

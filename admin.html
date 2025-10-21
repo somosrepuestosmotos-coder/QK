@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Diagnósticos - Suite Ejecutiva Digital</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background-color: #f7f7f9;
+      color: #222;
+      margin: 0;
+      padding: 2rem;
+    }
+    h1 {
+      color: #0A2F7B;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #0A2F7B;
+      color: white;
+    }
+    tr:hover td {
+      background-color: #f1f5ff;
+    }
+    #filters {
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 10px;
+    }
+    select, input {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    .count {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Panel de Diagnósticos - Suite Ejecutiva Digital</h1>
+
+  <div id="filters">
+    <select id="filter-question">
+      <option value="">Filtrar por pregunta...</option>
+      <option value="main_objective_6m">Objetivo principal</option>
+      <option value="biggest_challenge">Mayor desafío</option>
+      <option value="investment_priority">Prioridad de inversión</option>
+      <option value="start_timeline">Cronograma</option>
+    </select>
+
+    <input type="date" id="filter-date" />
+    <button onclick="loadData()">🔄 Actualizar</button>
+  </div>
+
+  <table id="responses-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Sesión</th>
+        <th>Pregunta</th>
+        <th>Respuesta</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="count" id="count"></div>
+
+  <script>
+    async function loadData() {
+      const tableBody = document.querySelector('#responses-table tbody');
+      const filterQuestion = document.getElementById('filter-question').value;
+      const filterDate = document.getElementById('filter-date').value;
+      tableBody.innerHTML = '<tr><td colspan="5">Cargando datos...</td></tr>';
+
+      try {
+        const res = await fetch('http://localhost:3000/api/respuestas');
+        const data = await res.json();
+        
+        let filtered = data;
+        if (filterQuestion) {
+          filtered = filtered.filter(item => item.pregunta === filterQuestion);
+        }
+        if (filterDate) {
+          filtered = filtered.filter(item => item.fecha.startsWith(filterDate));
+        }
+
+        tableBody.innerHTML = '';
+        filtered.forEach(row => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${row.id}</td>
+            <td>${row.session_id}</td>
+            <td>${row.pregunta}</td>
+            <td>${row.respuesta}</td>
+            <td>${new Date(row.fecha).toLocaleString()}</td>
+          `;
+          tableBody.appendChild(tr);
+        });
+
+        document.getElementById('count').textContent = 
+          `Total de respuestas mostradas: ${filtered.length}`;
+
+        if (filtered.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="5">Sin registros para este filtro.</td></tr>';
+        }
+      } catch (err) {
+        console.error(err);
+        tableBody.innerHTML = '<tr><td colspan="5">Error al cargar los datos.</td></tr>';
+      }
+    }
+
+    loadData();
+  </script>
+</body>
+</html>

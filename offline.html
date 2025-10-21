@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sin conexión - Suite Ejecutiva Digital</title>
+  <link rel="icon" href="favicon.ico" />
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f6f8fa;
+      color: #333;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      color: #0A2F7B;
+    }
+
+    img {
+      width: 120px;
+      margin-top: 1rem;
+      opacity: 0.8;
+    }
+
+    p {
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
+
+    button {
+      margin-top: 2rem;
+      padding: 0.7rem 1.2rem;
+      background-color: #00B6C8;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0997a7;
+    }
+  </style>
+</head>
+<body>
+  <h1>Estás sin conexión</h1>
+  <img src="android-chrome-192x192.png" alt="Suite Ejecutiva Logo" />
+  <p>No tienes conexión a Internet. Revisa tu red y vuelve a intentar.</p>
+  <button onclick="window.location.reload()">Reintentar</button>
+</body>
+</html>

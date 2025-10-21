@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Analítico Modo Oscuro - Suite Ejecutiva Digital</title>
+  <link rel="icon" href="favicon.ico" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+  <style>
+    :root {
+      --bg-color: #f6f8fa;
+      --text-color: #222;
+      --primary: #0A2F7B;
+      --accent: #00B6C8;
+      --table-header: #0A2F7B;
+      --table-text: #000;
+      --card-bg: #fff;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: #0e1117;
+        --text-color: #f1f1f1;
+        --primary: #00B6C8;
+        --accent: #E11D27;
+        --table-header: #1f2937;
+        --table-text: #f1f1f1;
+        --card-bg: #1a1a1a;
+        --shadow: rgba(255, 255, 255, 0.05);
+      }
+    }
+
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+
+    button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      font-size: 0.9rem;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .content {
+      max-width: 1200px;
+      margin: 1rem auto;
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: 0 2px 10px var(--shadow);
+      padding: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: var(--primary);
+      font-size: 1.2rem;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filters select, .filters input {
+      padding: 0.4rem 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      flex: 1;
+      min-width: 130px;
+      background-color: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    table th, table td {
+      border: 1px solid #444;
+      padding: 0.5rem;
+      text-align: left;
+    }
+
+    table th {
+      background-color: var(--table-header);
+      color: var(--text-color);
+      font-weight: bold;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    .charts {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 260px !important;
+    }
+
+    @media (min-width: 768px) {
+      .charts {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📊 Panel Analítico Modo Oscuro</h1>
+    <button id="exportExcel">Exportar</button>
+  </header>
+
+  <div class="content">
+    <h2>Respuestas Recopiladas</h2>
+
+    <div class="filters">
+      <select id="pregunta">
+        <option value="">Todas las preguntas</option>
+        <option value="main_objective_6m">Objetivo principal</option>
+        <option value="biggest_challenge">Mayor desafío</option>
+        <option value="investment_priority">Prioridad de inversión</option>
+        <option value="start_timeline">Cronograma ideal</option>
+      </select>
+
+      <input type="date" id="fechaInicio" />
+      <input type="date" id="fechaFin" />
+      <button id="filtrar">Filtrar</button>
+      <button id="reset">Reiniciar</button>
+    </div>
+
+    <div class="charts">
+      <div><canvas id="chartGeneral"></canvas></div>
+      <div><canvas id="chartDetalle"></canvas></div>
+    </div>
+
+    <div class="table-container">
+      <table id="tablaRespuestas">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Sesión</th>
+            <th>Pregunta</th>
+            <th>Respuesta</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let datosGlobales = [];
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      await cargarDatos();
+
+      document.getElementById("filtrar").addEventListener("click", aplicarFiltros);
+      document.getElementById("reset").addEventListener("click", resetFiltros);
+      document.getElementById("exportExcel").addEventListener("click", exportarExcel);
+
+      aplicarModoOscuroChart();
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", aplicarModoOscuroChart);
+    });
+
+    async function cargarDatos() {
+      const res = await fetch("/api/respuestas");
+      datosGlobales = await res.json();
+      renderTabla(datosGlobales);
+      renderGraficos(datosGlobales);
+    }
+
+    function renderTabla(datos) {
+      const tbody = document.querySelector("#tablaRespuestas tbody");
+      tbody.innerHTML = datos.map(r => `
+        <tr>
+          <td>${r.id}</td>
+          <td>${r.session_id}</td>
+          <td>${r.pregunta}</td>
+          <td>${r.respuesta}</td>
+          <td>${new Date(r.fecha).toLocaleString()}</td>
+        </tr>
+      `).join("");
+    }
+
+    function renderGraficos(datos) {
+      const conteoGeneral = {};
+      const detalle = {};
+
+      datos.forEach(d => {
+        conteoGeneral[d.pregunta] = (conteoGeneral[d.pregunta] || 0) + 1;
+        if (!detalle[d.pregunta]) detalle[d.pregunta] = {};
+        detalle[d.pregunta][d.respuesta] = (detalle[d.pregunta][d.respuesta] || 0) + 1;
+      });
+
+      renderChart("chartGeneral", "Respuestas por tipo", conteoGeneral, "bar");
+      const primera = Object.keys(detalle)[0];
+      if (primera) renderChart("chartDetalle", `Distribución: ${primera}`, detalle[primera], "pie");
+    }
+
+    function renderChart(canvasId, titulo, dataObj, tipo) {
+      const ctx = document.getElementById(canvasId);
+      if (ctx.chartInstance) ctx.chartInstance.destroy();
+
+      const labels = Object.keys(dataObj);
+      const values = Object.values(dataObj);
+
+      const darkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+      const chart = new Chart(ctx, {
+        type: tipo,
+        data: {
+          labels,
+          datasets: [{
+            label: titulo,
+            data: values,
+            backgroundColor: darkMode
+              ? ["#00B6C8", "#E11D27", "#6A5ACD", "#2ECC71", "#FFB347"]
+              : ["#0A2F7B", "#00B6C8", "#E11D27", "#FFCC00", "#8E44AD"]
+          }]
+        },
+        options: {
+          plugins: {
+            title: { display: true, text: titulo, color: darkMode ? "#fff" : "#000" },
+            legend: { display: tipo === "pie", labels: { color: darkMode ? "#fff" : "#000" } }
+          },
+          scales: tipo === "bar"
+            ? {
+                x: { ticks: { color: darkMode ? "#fff" : "#000" } },
+                y: { beginAtZero: true, ticks: { color: darkMode ? "#fff" : "#000" } }
+              }
+            : {}
+        }
+      });
+
+      ctx.chartInstance = chart;
+    }
+
+    function aplicarModoOscuroChart() {
+      renderGraficos(datosGlobales);
+    }
+
+    function aplicarFiltros() {
+      const pregunta = document.getElementById("pregunta").value;
+      const inicio = document.getElementById("fechaInicio").value;
+      const fin = document.getElementById("fechaFin").value;
+
+      let filtrados = [...datosGlobales];
+      if (pregunta) filtrados = filtrados.filter(d => d.pregunta === pregunta);
+      if (inicio) filtrados = filtrados.filter(d => new Date(d.fecha) >= new Date(inicio));
+      if (fin) filtrados = filtrados.filter(d => new Date(d.fecha) <= new Date(fin));
+
+      renderTabla(filtrados);
+      renderGraficos(filtrados);
+    }
+
+    function resetFiltros() {
+      document.getElementById("pregunta").value = "";
+      document.getElementById("fechaInicio").value = "";
+      document.getElementById("fechaFin").value = "";
+      renderTabla(datosGlobales);
+      renderGraficos(datosGlobales);
+    }
+
+    function exportarExcel() {
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(datosGlobales);
+      XLSX.utils.book_append_sheet(wb, ws, "Respuestas");
+      XLSX.writeFile(wb, "respuestas_suite_ejecutiva.xlsx");
+    }
+  </script>
+</body>
+</html>
