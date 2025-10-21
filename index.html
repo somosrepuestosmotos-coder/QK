@@ -25,7 +25,7 @@ body, html {
   color: var(--text-color);
 }
 
-/* === Escenas === */
+/* === Escenas (Sin cambios) === */
 .scene {
   position: absolute;
   top: 0; left: 0;
@@ -44,23 +44,57 @@ body, html {
   z-index: 2;
 }
 
-/* === Videos (Ahora IFRAMEs) === */
-.scene-video {
-  position: absolute;
-  top: 50%; left: 50%;
-  /* Asegura que el iframe llene el contenedor */
-  width: 100vw; 
-  height: 56.25vw; /* 100 / (16/9) = 56.25 */
-  min-height: 100vh;
-  min-width: 177.77vh; /* 100 * (16/9) = 177.77 */
-  transform: translate(-50%, -50%);
-  background-color: #000;
-  z-index: -2;
-  /* Deshabilita clics en el video de fondo */
-  pointer-events: none; 
+/* === NUEVO CSS PARA VIDEOS DE YOUTUBE === */
+/* 'video-wrapper' es un contenedor que fuerza al video
+  a llenar la pantalla (simulando 'object-fit: cover')
+*/
+.video-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background: #000;
+  overflow: hidden; /* Oculta el video que se desborda */
 }
 
-/* === Overlay con degradado dinámico === */
+/* 'scene-video' es el <div> que la API usará.
+  Lo forzamos a tener una relación 16:9 y a ser
+  más grande que la pantalla.
+*/
+.scene-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none; /* Deshabilita clics en el video */
+
+  /* Simula 'object-fit: cover' */
+  /* Por defecto (pantallas altas), llena la altura */
+  height: 100vh;
+  width: 177.77vh; /* 100 * 16/9 */
+}
+
+/* Si la pantalla es ancha, llena el ancho */
+@media (min-aspect-ratio: 16/9) {
+  .scene-video {
+    width: 100vw;
+    height: 56.25vw; /* 100 * 9/16 */
+  }
+}
+
+/* El <iframe> que YouTube crea debe llenar el <div> */
+.scene-video > iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+/* === FIN DEL NUEVO CSS === */
+
+/* === Overlay (Sin cambios) === */
 .scene-overlay {
   position: absolute;
   top: 0; left: 0;
@@ -69,7 +103,7 @@ body, html {
   z-index: -1;
 }
 
-/* === Texto === */
+/* === Texto (Sin cambios) === */
 .scene-content {
   position: relative;
   z-index: 1;
@@ -159,7 +193,7 @@ body, html {
   transform: translateY(-3px);
 }
 @media (max-width: 768px) {
-  .scene h1 { font-size: 6vw; }
+  .scene h1 { font-size:  6vw; }
   .scene p { font-size: 3.5vw; max-width: 90%; }
   .answers { grid-template-columns: 1fr; }
 }
@@ -170,42 +204,54 @@ body, html {
 <main id="presentation-container">
     <div class="scene active" id="scene-1">
     <div class="scene-overlay"></div>
-        <div id="video-1" class="scene-video"></div>
+    <div class="video-wrapper">
+      <div id="video-1" class="scene-video"></div>
+    </div>
     <div class="scene-content"><h1>Comenzamos por entender el corazón de su negocio.</h1>
       <p>Analizamos su situación actual, su catálogo y su posición en el mercado. Vimos la base de un líder.</p></div>
   </div>
 
   <div class="scene" id="scene-2">
     <div class="scene-overlay"></div>
-    <div id="video-2" class="scene-video"></div>
+    <div class="video-wrapper">
+      <div id="video-2" class="scene-video"></div>
+    </div>
     <div class="scene-content"><h1>Pero descubrimos una oportunidad que sus competidores no ven.</h1>
       <p>Su verdadero potencial no está solo en la calidad de sus piezas, sino en la construcción de una marca que inspire confianza inmediata a nivel digital.</p></div>
   </div>
 
   <div class="scene" id="scene-3">
     <div class="scene-overlay"></div>
-    <div id="video-3" class="scene-video"></div>
+    <div class="video-wrapper">
+      <div id="video-3" class="scene-video"></div>
+    </div>
     <div class="scene-content"><h1>Visualizamos su marca, no como es, sino como debería ser.</h1>
       <p>Una identidad visual que comunica potencia, confianza y liderazgo tecnológico en cada punto de contacto.</p></div>
   </div>
 
   <div class="scene" id="scene-4">
     <div class="scene-overlay"></div>
-    <div id="video-4" class="scene-video"></div>
+    <div class="video-wrapper">
+      <div id="video-4" class="scene-video"></div>
+    </div>
     <div class="scene-content"><h1>Una marca que cobra vida en el mundo real.</h1>
       <p>Desde la primera tarjeta de presentación hasta el empaque de cada producto, su nueva identidad proyecta calidad y confianza.</p></div>
   </div>
 
   <div class="scene" id="scene-5">
     <div class="scene-overlay"></div>
-    <div id="video-5" class="scene-video"></div>
+    <div class="video-wrapper">
+      <div id="video-5" class="scene-video"></div>
+    </div>
     <div class="scene-content"><h1>Más que una nueva imagen, un sistema diseñado para crecer.</h1>
       <p>Hemos estructurado una estrategia completa que transforma su experiencia en un motor de ventas predecible y automatizado.</p></div>
   </div>
 
   <div class="scene" id="scene-6">
     <div class="scene-overlay"></div>
-    <div id="video-6" class="scene-video"></div>
+    <div class="video-wrapper">
+      <div id="video-6" class="scene-video"></div>
+    </div>
     <div class="scene-content"><h1>Hemos construido el 90% del camino. El 10% final lo diseñamos juntos.</h1>
       <p>Esta visión estratégica necesita ser ajustada a sus objetivos específicos. Su conocimiento es la pieza clave para personalizar el Plan Piloto.</p></div>
   </div>
@@ -219,7 +265,7 @@ body, html {
 </div>
 
 <script>
-// 3. TODO EL SCRIPT SE MODIFICA PARA USAR LA API DE YOUTUBE
+// 3. SCRIPT MODIFICADO PARA USAR LA API DE YOUTUBE
 
 // IDs de tus 6 videos de YouTube
 const videoIDs = [
@@ -293,6 +339,7 @@ function onPlayerReady(event) {
 }
 
 // 🎥 Función que se llama CADA VEZ que el estado de UN video cambia
+// ESTA FUNCIÓN ES EL NUEVO 'onended'
 function onPlayerStateChange(event) {
     // Si el estado es 0 (Terminado)
     if (event.data === YT.PlayerState.ENDED) {
@@ -451,9 +498,6 @@ function showThankYou() {
     `;
     progressBar.style.width = `100%`;
 }
-
-// (Ya no necesitamos DOMContentLoaded, la API de YouTube se encarga de iniciar todo)
-
 </script>
 
 </body>
