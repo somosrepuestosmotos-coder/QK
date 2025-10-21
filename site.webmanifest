@@ -1,1 +1,67 @@
-{"name":"","short_name":"","icons":[{"src":"/android-chrome-192x192.png","sizes":"192x192","type":"image/png"},{"src":"/android-chrome-512x512.png","sizes":"512x512","type":"image/png"}],"theme_color":"#ffffff","background_color":"#ffffff","display":"standalone"}
+{
+  "name": "Suite Ejecutiva Digital - QK",
+  "short_name": "QK Suite",
+  "description": "Suite Ejecutiva Digital de QK: Diagnóstico Estratégico, Plan Piloto y Ecosistema de Crecimiento Empresarial.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A2F7B",
+  "theme_color": "#0A2F7B",
+  "categories": ["business", "productivity", "tools"],
+  "lang": "es-ES",
+  "icons": [
+    {
+      "src": "android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Abrir Diagnóstico",
+      "short_name": "Diagnóstico",
+      "description": "Ir directamente al formulario de diagnóstico ejecutivo",
+      "url": "/index.html#cuestionario",
+      "icons": [{ "src": "favicon-32x32.png", "sizes": "32x32" }]
+    },
+    {
+      "name": "Ver Resultados",
+      "short_name": "Resultados",
+      "description": "Abrir panel de resultados y análisis",
+      "url": "/admin_v5.html",
+      "icons": [{ "src": "favicon-32x32.png", "sizes": "32x32" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://somosrepuestosmotos-coder.github.io/QK/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "label": "Pantalla principal - Suite Ejecutiva Digital"
+    }
+  ],
+  "prefer_related_applications": false
+}
