@@ -276,7 +276,7 @@ body, html {
   <div class="scene" id="scene-6">
     <div class="scene-overlay"></div>
     <div class="video-wrapper">
-      <div id="video-6" class="scene-video"></div>
+G       <div id="video-6" class="scene-video"></div>
     </div>
     <div class="scene-content"><h1>Hemos construido el 90% del camino. El 10% final lo diseñamos juntos.</h1>
       <p>Esta visión estratégica necesita ser ajustada a sus objetivos específicos. Su conocimiento es la pieza clave para personalizar el Plan Piloto.</p></div>
@@ -314,7 +314,10 @@ const questions = [
     { key: 'start_timeline', text: '¿Cuál es su cronograma ideal para iniciar este plan piloto?', answers: ['Inmediatamente', 'En el próximo mes', 'En el próximo trimestre', 'Aún por definir'] }
 ];
 
-// Esta función se llama automáticamente cuando la API de YouTube está lista
+// ***************************************************************
+// ESTA ES LA FUNCIÓN CLAVE QUE SE LLAMA AUTOMÁTICAMENTE
+// CUANDO LA API DE YOUTUBE (iframe_api) TERMINA DE CARGAR
+// ***************************************************************
 function onYouTubeIframeAPIReady() {
     scenes = Array.from(document.querySelectorAll('.scene'));
     formContainer = document.getElementById('form-container');
@@ -446,12 +449,12 @@ function showForm() {
 // 🧠 Renderizar una pregunta
 function renderQuestion() {
     questionsWrapper.innerHTML = '';
-    if (currentQuestionIndex >= questions.length) {
+    if (currentSceneIndex >= questions.length) {
         showThankYou();
         return;
     }
 
-    const question = questions[currentQuestionIndex];
+    const question = questions[currentSceneIndex];
     const card = document.createElement('div');
     card.className = 'question-card active';
     let answersHTML = '';
