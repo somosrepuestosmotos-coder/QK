@@ -3,51 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sin conexión - Suite Ejecutiva Digital</title>
-  <link rel="icon" href="favicon.ico" />
+  <title>Sin conexión | Suite Ejecutiva Digital</title>
   <style>
     body {
-      font-family: "Segoe UI", sans-serif;
-      background-color: #f6f8fa;
-      color: #333;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0A2F7B;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
       text-align: center;
-      padding: 2rem;
+      padding: 1.5rem;
     }
-
-    h1 {
-      color: #0A2F7B;
-    }
-
-    img {
-      width: 120px;
-      margin-top: 1rem;
-      opacity: 0.8;
-    }
-
-    p {
-      margin-top: 1rem;
-      font-size: 1rem;
-    }
-
+    h1 { font-size: 2rem; margin-bottom: 1rem; }
+    p { font-size: 1rem; max-width: 400px; line-height: 1.6; }
     button {
       margin-top: 2rem;
-      padding: 0.7rem 1.2rem;
-      background-color: #00B6C8;
-      color: #fff;
+      padding: 0.8rem 1.5rem;
+      background: #00B6C8;
       border: none;
       border-radius: 6px;
+      color: #fff;
+      font-size: 1rem;
       cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #0997a7;
     }
   </style>
 </head>
 <body>
-  <h1>Estás sin conexión</h1>
-  <img src="android-chrome-192x192.png" alt="Suite Ejecutiva Logo" />
-  <p>No tienes conexión a Internet. Revisa tu red y vuelve a intentar.</p>
+  <h1>Sin conexión a Internet</h1>
+  <p>Parece que no tienes conexión. Podrás acceder nuevamente cuando estés en línea.</p>
   <button onclick="window.location.reload()">Reintentar</button>
 </body>
 </html>
