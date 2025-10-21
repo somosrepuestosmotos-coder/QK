@@ -1,297 +1,460 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0A2F7B" />
-  <meta name="description" content="Suite Ejecutiva Digital – Diagnóstico Estratégico y Plan Piloto para negocios que quieren crecer con estrategia, marketing y tecnología." />
-  <title>Suite Ejecutiva Digital - QK</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suite Ejecutiva Digital - Propuesta Estratégica</title>
 
-  <!-- ✅ FAVICONS -->
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-  <link rel="manifest" href="site.webmanifest">
-  <meta name="msapplication-config" content="browserconfig.xml">
+<script src="https://www.youtube.com/iframe_api"></script>
 
-  <!-- ✅ OPEN GRAPH / TWITTER -->
-  <meta property="og:title" content="Suite Ejecutiva Digital - Diagnóstico Estratégico QK" />
-  <meta property="og:description" content="Descubre el potencial de tu negocio con nuestra Suite Ejecutiva Digital. Plan Piloto y Estrategia en minutos." />
-  <meta property="og:image" content="https://somosrepuestosmotos-coder.github.io/QK/android-chrome-512x512.png" />
-  <meta property="og:url" content="https://somosrepuestosmotos-coder.github.io/QK/" />
-  <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Suite Ejecutiva Digital - Diagnóstico Estratégico QK" />
-  <meta name="twitter:description" content="Plan Piloto, Diagnóstico y Estrategia para empresas innovadoras." />
-  <meta name="twitter:image" content="https://somosrepuestosmotos-coder.github.io/QK/android-chrome-512x512.png" />
+<style>
+:root {
+  --primary-color: #0A2F7B;
+  --secondary-color: #00B6C8;
+  --text-color: #FFFFFF;
+}
 
-  <!-- ✅ ESTILOS -->
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: "Segoe UI", Roboto, sans-serif;
-      background: #000;
-      color: #fff;
-      overflow-x: hidden;
-    }
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #000;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--text-color);
+}
 
-    video {
-      width: 100%;
-      height: 100vh;
-      object-fit: cover;
-      transition: transform 1s ease-in-out;
-    }
+/* === Escenas === */
+.scene {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 1.8s ease-in-out;
+}
 
-    section {
-      position: relative;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
+.scene.active {
+  opacity: 1;
+  z-index: 2;
+}
 
-    .overlay {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.35);
-      z-index: 1;
-      transition: background 0.8s ease;
-    }
+/* === Videos (Ahora IFRAMEs) === */
+.scene-video {
+  position: absolute;
+  top: 50%; left: 50%;
+  /* Asegura que el iframe llene el contenedor */
+  width: 100vw; 
+  height: 56.25vw; /* 100 / (16/9) = 56.25 */
+  min-height: 100vh;
+  min-width: 177.77vh; /* 100 * (16/9) = 177.77 */
+  transform: translate(-50%, -50%);
+  background-color: #000;
+  z-index: -2;
+  /* Deshabilita clics en el video de fondo */
+  pointer-events: none; 
+}
 
-    .text-box {
-      position: relative;
-      z-index: 2;
-      max-width: 800px;
-      padding: 1.5rem;
-      font-size: 1.6rem;
-      line-height: 1.4;
-      text-align: justify;
-      backdrop-filter: blur(6px);
-      border-radius: 10px;
-      background-color: rgba(0, 0, 0, 0.3);
-      color: #fff;
-      animation: fadeIn 2s ease;
-    }
+/* === Overlay con degradado dinámico === */
+.scene-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.35));
+  z-index: -1;
+}
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+/* === Texto === */
+.scene-content {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(25px);
+  transition: opacity 1.4s ease-out, transform 1.4s ease-out;
+  padding: 2rem;
+  box-sizing: border-box;
+}
 
-    .cuestionario {
-      background: #0A2F7B;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem 1rem;
-    }
+.scene.active .scene-content.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
-    .cuestionario h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
+.scene h1 {
+  font-size: 3.8vw;
+  margin-bottom: 1.5vw;
+  font-weight: 700;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+  letter-spacing: 0.03em;
+}
 
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-      width: 100%;
-      max-width: 600px;
-    }
+.scene p {
+  font-size: 1.9vw;
+  max-width: 55%;
+  line-height: 1.6;
+  font-weight: 300;
+  text-shadow: 1px 1px 6px rgba(0,0,0,0.8);
+  text-align: justify;
+  text-justify: inter-word;
+  margin: 0 auto;
+}
 
-    label {
-      font-weight: bold;
-      text-align: left;
-    }
+/* === Formulario (Sin cambios) === */
+#form-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 100;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(10px);
+}
+.form-content { width: 90%; max-width: 800px; }
+.question-card {
+  background-color: #2c2c2c;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  display: none;
+}
+.question-card.active { display: block; animation: fadeIn 0.5s forwards; }
+@keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
 
-    select, button {
-      padding: 0.8rem;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: none;
-    }
-
-    select {
-      background: #fff;
-      color: #333;
-    }
-
-    button {
-      background: #00B6C8;
-      color: #fff;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover { background: #0997a7; }
-
-    footer {
-      text-align: center;
-      background: #000;
-      color: #ccc;
-      padding: 1.5rem 0;
-      font-size: 0.9rem;
-    }
-
-    @media (max-width: 768px) {
-      .text-box { font-size: 1.2rem; padding: 1rem; }
-    }
-  </style>
+#progress-bar-container {
+  width: 100%;
+  background-color: #444;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+#progress-bar {
+  width: 0%; height: 10px;
+  background-color: var(--secondary-color);
+  transition: width 0.4s ease-out;
+}
+.answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+.answer-btn {
+  background-color: #3e3e3e;
+  color: var(--text-color);
+  border: 1px solid #555;
+  padding: 15px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s, transform 0.2s;
+}
+.answer-btn:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-3px);
+}
+@media (max-width: 768px) {
+  .scene h1 { font-size: 6vw; }
+  .scene p { font-size: 3.5vw; max-width: 90%; }
+  .answers { grid-template-columns: 1fr; }
+}
+</style>
 </head>
 
 <body>
-  <!-- 🎥 SECCIONES CON VIDEOS -->
-  <section id="video1">
-    <video src="videos/animacion-logo-qk-original.mp4" autoplay muted playsinline></video>
-    <div class="overlay"></div>
-    <div class="text-box">
-      Una marca con propósito que evoluciona para liderar la transformación digital de las empresas.
-    </div>
-  </section>
+<main id="presentation-container">
+    <div class="scene active" id="scene-1">
+    <div class="scene-overlay"></div>
+        <div id="video-1" class="scene-video"></div>
+    <div class="scene-content"><h1>Comenzamos por entender el corazón de su negocio.</h1>
+      <p>Analizamos su situación actual, su catálogo y su posición en el mercado. Vimos la base de un líder.</p></div>
+  </div>
 
-  <section id="video2">
-    <video src="videos/animacion-insight-mercado.mp4" muted playsinline></video>
-    <div class="overlay"></div>
-    <div class="text-box">
-      Entendemos el mercado, los nuevos comportamientos y cómo conectar las marcas con las personas.
-    </div>
-  </section>
+  <div class="scene" id="scene-2">
+    <div class="scene-overlay"></div>
+    <div id="video-2" class="scene-video"></div>
+    <div class="scene-content"><h1>Pero descubrimos una oportunidad que sus competidores no ven.</h1>
+      <p>Su verdadero potencial no está solo en la calidad de sus piezas, sino en la construcción de una marca que inspire confianza inmediata a nivel digital.</p></div>
+  </div>
 
-  <section id="video3">
-    <video src="videos/animacion-nuevo-logo-3d.mp4" muted playsinline></video>
-    <div class="overlay"></div>
-    <div class="text-box">
-      Un nuevo símbolo que representa innovación, estrategia y visión de futuro.
-    </div>
-  </section>
+  <div class="scene" id="scene-3">
+    <div class="scene-overlay"></div>
+    <div id="video-3" class="scene-video"></div>
+    <div class="scene-content"><h1>Visualizamos su marca, no como es, sino como debería ser.</h1>
+      <p>Una identidad visual que comunica potencia, confianza y liderazgo tecnológico en cada punto de contacto.</p></div>
+  </div>
 
-  <section id="video4">
-    <video src="videos/animacion-papeleria-merchandising-packaging.mp4" muted playsinline></video>
-    <div class="overlay"></div>
-    <div class="text-box">
-      Una marca que cobra vida en el mundo real. Desde la primera tarjeta hasta el empaque de cada producto.
-    </div>
-  </section>
+  <div class="scene" id="scene-4">
+    <div class="scene-overlay"></div>
+    <div id="video-4" class="scene-video"></div>
+    <div class="scene-content"><h1>Una marca que cobra vida en el mundo real.</h1>
+      <p>Desde la primera tarjeta de presentación hasta el empaque de cada producto, su nueva identidad proyecta calidad y confianza.</p></div>
+  </div>
 
-  <section id="video5">
-    <video src="videos/animacion-ecosistema-digital.mp4" muted playsinline></video>
-    <div class="overlay"></div>
-    <div class="text-box">
-      Un ecosistema digital integral que impulsa el crecimiento, la conexión y la experiencia del cliente.
-    </div>
-  </section>
+  <div class="scene" id="scene-5">
+    <div class="scene-overlay"></div>
+    <div id="video-5" class="scene-video"></div>
+    <div class="scene-content"><h1>Más que una nueva imagen, un sistema diseñado para crecer.</h1>
+      <p>Hemos estructurado una estrategia completa que transforma su experiencia en un motor de ventas predecible y automatizado.</p></div>
+  </div>
 
-  <!-- 🧠 CUESTIONARIO -->
-  <section class="cuestionario" id="cuestionario">
-    <h2>Diagnóstico Ejecutivo</h2>
-    <form id="diagnosticoForm">
-      <label for="main_objective_6m">1️⃣ Objetivo principal en los próximos 6 meses</label>
-      <select id="main_objective_6m" required>
-        <option value="">Seleccione...</option>
-        <option>Aumentar ventas B2B</option>
-        <option>Mejorar presencia digital</option>
-        <option>Optimizar procesos</option>
-      </select>
+  <div class="scene" id="scene-6">
+    <div class="scene-overlay"></div>
+    <div id="video-6" class="scene-video"></div>
+    <div class="scene-content"><h1>Hemos construido el 90% del camino. El 10% final lo diseñamos juntos.</h1>
+      <p>Esta visión estratégica necesita ser ajustada a sus objetivos específicos. Su conocimiento es la pieza clave para personalizar el Plan Piloto.</p></div>
+  </div>
+</main>
 
-      <label for="biggest_challenge">2️⃣ Mayor desafío actual</label>
-      <select id="biggest_challenge" required>
-        <option value="">Seleccione...</option>
-        <option>Competencia de precios</option>
-        <option>Falta de posicionamiento</option>
-        <option>Baja conversión digital</option>
-      </select>
+<div id="form-container">
+  <div class="form-content">
+    <div id="progress-bar-container"><div id="progress-bar"></div></div>
+    <div id="questions-wrapper"></div>
+  </div>
+</div>
 
-      <label for="investment_priority">3️⃣ Prioridad de inversión</label>
-      <select id="investment_priority" required>
-        <option value="">Seleccione...</option>
-        <option>Marketing y Publicidad</option>
-        <option>Tecnología y Desarrollo</option>
-        <option>Capacitación y Talento</option>
-      </select>
+<script>
+// 3. TODO EL SCRIPT SE MODIFICA PARA USAR LA API DE YOUTUBE
 
-      <label for="start_timeline">4️⃣ ¿Cuándo iniciar el plan?</label>
-      <select id="start_timeline" required>
-        <option value="">Seleccione...</option>
-        <option>Inmediatamente</option>
-        <option>En 1 a 3 meses</option>
-        <option>Más adelante</option>
-      </select>
+// IDs de tus 6 videos de YouTube
+const videoIDs = [
+    'jXJbwVh1bog', // Video 1
+    '8mVLMXTiXCY', // Video 2
+    'sRbaFSkZvgs', // Video 3
+    'IOmOHeevOp8', // Video 4
+    '8EeEbn7DT04', // Video 5
+    'tHF3LaB90yM'  // Video 6
+];
 
-      <button type="submit">Enviar Diagnóstico</button>
-    </form>
-  </section>
+// Variables globales
+let scenes;
+let players = []; // Array para guardar los reproductores de YouTube
+let currentSceneIndex = 0;
+let formContainer, questionsWrapper, progressBar;
+let sessionId = `session_${new Date().getTime()}_${Math.random().toString(36).substr(2, 9)}`;
 
-  <footer>
-    &copy; 2025 QK · Suite Ejecutiva Digital · Todos los derechos reservados.
-  </footer>
+const questions = [
+    { key: 'main_objective_6m', text: '¿Cuál es su objetivo principal para los próximos 6 meses?', answers: ['Aumentar ventas B2B', 'Expandir a nuevas regiones', 'Mejorar la rentabilidad', 'Fortalecer la marca'] },
+    { key: 'biggest_challenge', text: '¿Cuál considera su mayor desafío actualmente?', answers: ['Competencia de precios', 'Logística y entregas', 'Fidelización de clientes', 'Digitalización de procesos'] },
+    { key: 'investment_priority', text: '¿En qué área priorizaría la inversión?', answers: ['Marketing y Publicidad', 'Tecnología (E-commerce, CRM)', 'Inventario y Stock', 'Capacitación de equipo'] },
+    { key: 'start_timeline', text: '¿Cuál es su cronograma ideal para iniciar este plan piloto?', answers: ['Inmediatamente', 'En el próximo mes', 'En el próximo trimestre', 'Aún por definir'] }
+];
 
-  <!-- 🧩 JAVASCRIPT FUNCIONAL -->
-  <script>
-    const videos = document.querySelectorAll("video");
-    let currentIndex = 0;
+// Esta función se llama automáticamente cuando la API de YouTube está lista
+function onYouTubeIframeAPIReady() {
+    scenes = Array.from(document.querySelectorAll('.scene'));
+    
+    // Inicializar elementos del formulario
+    formContainer = document.getElementById('form-container');
+    questionsWrapper = document.getElementById('questions-wrapper');
+    progressBar = document.getElementById('progress-bar');
 
-    function playVideo(index) {
-      videos.forEach((v, i) => {
-        v.pause();
-        v.currentTime = 0;
-      });
-
-      const video = videos[index];
-      video.play();
-
-      video.onended = () => {
-        currentIndex = (index + 1) % videos.length;
-        if (currentIndex === 0) {
-          document.getElementById("cuestionario").scrollIntoView({ behavior: "smooth" });
-        } else {
-          playVideo(currentIndex);
-        }
-      };
-    }
-
-    videos.forEach((video, i) => {
-      video.addEventListener("click", () => {
-        currentIndex = (i + 1) % videos.length;
-        playVideo(currentIndex);
-      });
-    });
-
-    playVideo(0);
-
-    // Guardar respuestas en servidor
-    document.getElementById("diagnosticoForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const respuestas = {
-        main_objective_6m: document.getElementById("main_objective_6m").value,
-        biggest_challenge: document.getElementById("biggest_challenge").value,
-        investment_priority: document.getElementById("investment_priority").value,
-        start_timeline: document.getElementById("start_timeline").value,
-      };
-
-      for (const [pregunta, respuesta] of Object.entries(respuestas)) {
-        await fetch("/api/responder", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pregunta, respuesta })
+    // Crear un reproductor de YouTube para cada escena
+    videoIDs.forEach((videoId, index) => {
+        players[index] = new YT.Player(`video-${index + 1}`, {
+            videoId: videoId,
+            playerVars: {
+                autoplay: 0,       // No auto-reproducir al cargar, lo controlamos con script
+                mute: 1,         // Silenciado
+                controls: 0,     // Sin controles
+                loop: 0,         // No repetir
+                playsinline: 1,  // Necesario para móviles
+                modestbranding: 1,
+                rel: 0
+            },
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
         });
-      }
-
-      alert("✅ Diagnóstico enviado. Gracias por participar.");
-      e.target.reset();
     });
 
-    // Registrar Service Worker para PWA
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("service-worker.js")
-          .then(() => console.log("✅ Service Worker activo"))
-          .catch(err => console.error("❌ Error SW:", err));
-      });
+    // 👆 Avance manual con clic
+    document.getElementById('presentation-container').addEventListener('click', () => {
+        if (currentSceneIndex === scenes.length - 1) {
+            showForm();
+        } else {
+            transitionToScene(currentSceneIndex + 1);
+        }
+    });
+}
+
+// 🚀 Iniciar presentación (cuando el primer video está listo)
+function onPlayerReady(event) {
+    // Iniciar la presentación solo cuando el primer video (índice 0) esté listo
+    if (players[0] && event.target.getIframe().id === players[0].getIframe().id) {
+        startPresentation();
     }
-  </script>
+}
+
+// 🎥 Función que se llama CADA VEZ que el estado de UN video cambia
+function onPlayerStateChange(event) {
+    // Si el estado es 0 (Terminado)
+    if (event.data === YT.PlayerState.ENDED) {
+        // Y si es el video de la escena actual
+        if (event.target.getIframe().id === players[currentSceneIndex].getIframe().id) {
+            // Avanzar a la siguiente escena
+            if (currentSceneIndex < scenes.length - 1) {
+                transitionToScene(currentSceneIndex + 1);
+            } else {
+                showForm(); // Mostrar formulario al final
+            }
+        }
+    }
+}
+
+// 🎬 Mostrar texto suavemente
+function showTextForScene(scene) {
+    const content = scene.querySelector('.scene-content');
+    if (content) {
+        setTimeout(() => {
+            content.classList.add('visible');
+        }, 1000);
+    }
+}
+
+// 🔁 Ocultar texto de todas las escenas
+function hideAllTexts() {
+    scenes.forEach(scene => {
+        const content = scene.querySelector('.scene-content');
+        if (content) content.classList.remove('visible');
+    });
+}
+
+// 🎥 Transición a la siguiente escena
+function transitionToScene(nextIndex) {
+    if (nextIndex >= scenes.length) return;
+
+    const currentScene = scenes[currentSceneIndex];
+    const nextScene = scenes[nextIndex];
+
+    hideAllTexts();
+    currentScene.classList.remove('active');
+    
+    // Detener el video actual (si está reproduciendo)
+    if (players[currentSceneIndex]) {
+        players[currentSceneIndex].stopVideo(); 
+    }
+
+    nextScene.classList.add('active');
+    
+    // Reproducir el video de la nueva escena
+    if (players[nextIndex]) {
+        players[nextIndex].seekTo(0); // Reiniciar el video
+        players[nextIndex].playVideo();
+    }
+
+    currentSceneIndex = nextIndex;
+    showTextForScene(nextScene);
+}
+
+// 🚀 Iniciar presentación
+function startPresentation() {
+    hideAllTexts();
+    const firstScene = scenes[0];
+    if (!firstScene) return;
+
+    // Reproducir el primer video de YouTube
+    if (players[0]) {
+        players[0].playVideo();
+    }
+    
+    showTextForScene(firstScene);
+}
+
+
+// --- RESTO DEL SCRIPT DEL FORMULARIO (SIN CAMBIOS) ---
+
+// 🧾 Mostrar formulario flotante
+function showForm() {
+    formContainer.style.display = 'flex';
+    // Pausar el último video por si acaso
+    if (players[currentSceneIndex]) {
+        players[currentSceneIndex].pauseVideo();
+    }
+    renderQuestion();
+}
+
+// 🧠 Renderizar una pregunta
+function renderQuestion() {
+    questionsWrapper.innerHTML = '';
+    if (currentQuestionIndex >= questions.length) {
+        showThankYou();
+        return;
+    }
+
+    const question = questions[currentQuestionIndex];
+    const card = document.createElement('div');
+    card.className = 'question-card active';
+    let answersHTML = '';
+    question.answers.forEach(answer => {
+        answersHTML += `<button class="answer-btn" data-key="${question.key}" data-value="${answer}">${answer}</button>`;
+    });
+    card.innerHTML = `<h2>${question.text}</h2><div class="answers">${answersHTML}</div>`;
+    questionsWrapper.appendChild(card);
+
+    document.querySelectorAll('.answer-btn').forEach(btn => {
+        btn.addEventListener('click', handleAnswer);
+    });
+}
+
+// 💾 Enviar respuesta real al servidor
+async function handleAnswer(event) {
+    const key = event.target.dataset.key;
+    const value = event.target.dataset.value;
+
+    try {
+        const response = await fetch("http://localhost:3000/api/responder", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sessionId, key, value })
+        });
+
+        if (!response.ok) throw new Error("Error al enviar datos al servidor");
+
+        console.log(`✅ Respuesta guardada: ${key} → ${value}`);
+
+        event.target.classList.add('selected');
+        setTimeout(() => {
+            currentQuestionIndex++;
+            updateProgressBar();
+            renderQuestion();
+        }, 400);
+
+    } catch (error) {
+        console.error("❌ Error al guardar respuesta:", error);
+        alert("No se pudo registrar la respuesta. Intenta nuevamente.");
+    }
+}
+
+// 📊 Progreso
+function updateProgressBar() {
+    const progress = (currentQuestionIndex / questions.length) * 100;
+    progressBar.style.width = `${progress}%`;
+}
+
+// 🙏 Pantalla final
+function showThankYou() {
+    questionsWrapper.innerHTML = `
+        <div class="question-card active" style="text-align: center;">
+            <h1>Gracias. Hemos recibido su diagnóstico.</h1>
+            <p style="font-size: 1.2rem; max-width: 100%;">
+                Nuestro equipo de estrategia ya está utilizando sus respuestas para personalizar su Plan Piloto de Adquisición.
+                Recibirá su hoja de ruta detallada en las próximas 48 horas. Prepárese para acelerar.
+            </p>
+        </div>
+    `;
+    progressBar.style.width = `100%`;
+}
+
+// (Ya no necesitamos DOMContentLoaded, la API de YouTube se encarga de iniciar todo)
+
+</script>
+
 </body>
 </html>
