@@ -23,6 +23,7 @@ body, html {
   background-color: #000;
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
   color: var(--text-color);
+  cursor: pointer; /* Indica que la página es interactiva */
 }
 
 /* === Escenas (Sin cambios) === */
@@ -44,10 +45,7 @@ body, html {
   z-index: 2;
 }
 
-/* === NUEVO CSS PARA VIDEOS DE YOUTUBE === */
-/* 'video-wrapper' es un contenedor que fuerza al video
-  a llenar la pantalla (simulando 'object-fit: cover')
-*/
+/* === CSS PARA VIDEOS DE YOUTUBE === */
 .video-wrapper {
   position: absolute;
   top: 0;
@@ -56,35 +54,23 @@ body, html {
   height: 100%;
   z-index: -2;
   background: #000;
-  overflow: hidden; /* Oculta el video que se desborda */
+  overflow: hidden; 
 }
-
-/* 'scene-video' es el <div> que la API usará.
-  Lo forzamos a tener una relación 16:9 y a ser
-  más grande que la pantalla.
-*/
 .scene-video {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  pointer-events: none; /* Deshabilita clics en el video */
-
-  /* Simula 'object-fit: cover' */
-  /* Por defecto (pantallas altas), llena la altura */
+  pointer-events: none;
   height: 100vh;
   width: 177.77vh; /* 100 * 16/9 */
 }
-
-/* Si la pantalla es ancha, llena el ancho */
 @media (min-aspect-ratio: 16/9) {
   .scene-video {
     width: 100vw;
     height: 56.25vw; /* 100 * 9/16 */
   }
 }
-
-/* El <iframe> que YouTube crea debe llenar el <div> */
 .scene-video > iframe {
   position: absolute;
   top: 0;
@@ -92,7 +78,7 @@ body, html {
   width: 100%;
   height: 100%;
 }
-/* === FIN DEL NUEVO CSS === */
+/* === FIN DEL CSS DE VIDEO === */
 
 /* === Overlay (Sin cambios) === */
 .scene-overlay {
@@ -137,6 +123,39 @@ body, html {
   text-justify: inter-word;
   margin: 0 auto;
 }
+
+/* === NUEVO: AVISO PARA INICIAR === */
+#start-prompt {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  font-size: 1.2vw;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 10px 20px;
+  border-radius: 50px;
+  opacity: 0;
+  transition: opacity 1s ease-in-out 2s; /* Aparece después de 2s */
+  animation: pulse 2s infinite alternate 3s;
+}
+
+#start-prompt.visible {
+  opacity: 1;
+}
+
+#start-prompt.hidden {
+  opacity: 0;
+  display: none;
+}
+
+@keyframes pulse {
+  from { background-color: rgba(0, 182, 200, 0.1); }
+  to { background-color: rgba(0, 182, 200, 0.3); }
+}
+
 
 /* === Formulario (Sin cambios) === */
 #form-container {
@@ -195,6 +214,7 @@ body, html {
 @media (max-width: 768px) {
   .scene h1 { font-size:  6vw; }
   .scene p { font-size: 3.5vw; max-width: 90%; }
+  #start-prompt { font-size: 3vw; }
   .answers { grid-template-columns: 1fr; }
 }
 </style>
@@ -209,6 +229,7 @@ body, html {
     </div>
     <div class="scene-content"><h1>Comenzamos por entender el corazón de su negocio.</h1>
       <p>Analizamos su situación actual, su catálogo y su posición en el mercado. Vimos la base de un líder.</p></div>
+    <div id="start-prompt">Haz clic para comenzar</div>
   </div>
 
   <div class="scene" id="scene-2">
@@ -265,23 +286,18 @@ body, html {
 </div>
 
 <script>
-// 3. SCRIPT MODIFICADO PARA USAR LA API DE YOUTUBE
-
 // IDs de tus 6 videos de YouTube
 const videoIDs = [
-    'jXJbwVh1bog', // Video 1
-    '8mVLMXTiXCY', // Video 2
-    'sRbaFSkZvgs', // Video 3
-    'IOmOHeevOp8', // Video 4
-    '8EeEbn7DT04', // Video 5
-    'tHF3LaB90yM'  // Video 6
+    'jXJbwVh1bog', '8mVLMXTiXCY', 'sRbaFSkZvgs', 
+    'IOmOHeevOp8', '8EeEbn7DT04', 'tHF3LaB90yM'
 ];
 
 // Variables globales
 let scenes;
-let players = []; // Array para guardar los reproductores de YouTube
+let players = []; 
 let currentSceneIndex = 0;
-let formContainer, questionsWrapper, progressBar;
+let formContainer, questionsWrapper, progressBar, startPrompt;
+let presentationStarted = false; // <-- NUEVA VARIABLE
 let sessionId = `session_${new Date().getTime()}_${Math.random().toString(36).substr(2, 9)}`;
 
 const questions = [
@@ -294,24 +310,18 @@ const questions = [
 // Esta función se llama automáticamente cuando la API de YouTube está lista
 function onYouTubeIframeAPIReady() {
     scenes = Array.from(document.querySelectorAll('.scene'));
-    
-    // Inicializar elementos del formulario
     formContainer = document.getElementById('form-container');
     questionsWrapper = document.getElementById('questions-wrapper');
     progressBar = document.getElementById('progress-bar');
+    startPrompt = document.getElementById('start-prompt');
 
     // Crear un reproductor de YouTube para cada escena
     videoIDs.forEach((videoId, index) => {
         players[index] = new YT.Player(`video-${index + 1}`, {
             videoId: videoId,
             playerVars: {
-                autoplay: 0,       // No auto-reproducir al cargar, lo controlamos con script
-                mute: 1,         // Silenciado
-                controls: 0,     // Sin controles
-                loop: 0,         // No repetir
-                playsinline: 1,  // Necesario para móviles
-                modestbranding: 1,
-                rel: 0
+                autoplay: 0, mute: 1, controls: 0, loop: 0,
+                playsinline: 1, modestbranding: 1, rel: 0
             },
             events: {
                 'onReady': onPlayerReady,
@@ -320,42 +330,48 @@ function onYouTubeIframeAPIReady() {
         });
     });
 
-    // 👆 Avance manual con clic
+    // 👆 LÓGICA DE CLIC MODIFICADA
     document.getElementById('presentation-container').addEventListener('click', () => {
-        if (currentSceneIndex === scenes.length - 1) {
-            showForm();
-        } else {
-            transitionToScene(currentSceneIndex + 1);
+        // Si la presentación no ha comenzado, este clic la inicia
+        if (!presentationStarted) {
+            presentationStarted = true;
+            startPrompt.classList.add('hidden'); // Ocultar el aviso
+            startPresentation(); // Reproducir el primer video
+        } 
+        // Si ya comenzó, el clic funciona como "saltar"
+        else {
+            if (currentSceneIndex === scenes.length - 1) {
+                showForm();
+            } else {
+                transitionToScene(currentSceneIndex + 1);
+            }
         }
     });
 }
 
 // 🚀 Iniciar presentación (cuando el primer video está listo)
+// MODIFICADO: Ya no inicia el video, solo muestra el texto y el aviso
 function onPlayerReady(event) {
-    // Iniciar la presentación solo cuando el primer video (índice 0) esté listo
     if (players[0] && event.target.getIframe().id === players[0].getIframe().id) {
-        startPresentation();
+        showTextForScene(scenes[0]);
+        startPrompt.classList.add('visible'); // Mostrar "Haz clic para comenzar"
     }
 }
 
-// 🎥 Función que se llama CADA VEZ que el estado de UN video cambia
-// ESTA FUNCIÓN ES EL NUEVO 'onended'
+// 🎥 Esta función es el nuevo 'onended' (Sin cambios)
 function onPlayerStateChange(event) {
-    // Si el estado es 0 (Terminado)
     if (event.data === YT.PlayerState.ENDED) {
-        // Y si es el video de la escena actual
         if (event.target.getIframe().id === players[currentSceneIndex].getIframe().id) {
-            // Avanzar a la siguiente escena
             if (currentSceneIndex < scenes.length - 1) {
                 transitionToScene(currentSceneIndex + 1);
             } else {
-                showForm(); // Mostrar formulario al final
+                showForm(); 
             }
         }
     }
 }
 
-// 🎬 Mostrar texto suavemente
+// 🎬 Mostrar texto suavemente (Sin cambios)
 function showTextForScene(scene) {
     const content = scene.querySelector('.scene-content');
     if (content) {
@@ -365,7 +381,7 @@ function showTextForScene(scene) {
     }
 }
 
-// 🔁 Ocultar texto de todas las escenas
+// 🔁 Ocultar texto de todas las escenas (Sin cambios)
 function hideAllTexts() {
     scenes.forEach(scene => {
         const content = scene.querySelector('.scene-content');
@@ -373,7 +389,7 @@ function hideAllTexts() {
     });
 }
 
-// 🎥 Transición a la siguiente escena
+// 🎥 Transición a la siguiente escena (Sin cambios)
 function transitionToScene(nextIndex) {
     if (nextIndex >= scenes.length) return;
 
@@ -383,16 +399,14 @@ function transitionToScene(nextIndex) {
     hideAllTexts();
     currentScene.classList.remove('active');
     
-    // Detener el video actual (si está reproduciendo)
     if (players[currentSceneIndex]) {
         players[currentSceneIndex].stopVideo(); 
     }
 
     nextScene.classList.add('active');
     
-    // Reproducir el video de la nueva escena
     if (players[nextIndex]) {
-        players[nextIndex].seekTo(0); // Reiniciar el video
+        players[nextIndex].seekTo(0); 
         players[nextIndex].playVideo();
     }
 
@@ -400,13 +414,12 @@ function transitionToScene(nextIndex) {
     showTextForScene(nextScene);
 }
 
-// 🚀 Iniciar presentación
+// 🚀 Iniciar presentación (Sin cambios, pero ahora se llama con el primer clic)
 function startPresentation() {
     hideAllTexts();
     const firstScene = scenes[0];
     if (!firstScene) return;
 
-    // Reproducir el primer video de YouTube
     if (players[0]) {
         players[0].playVideo();
     }
@@ -420,7 +433,6 @@ function startPresentation() {
 // 🧾 Mostrar formulario flotante
 function showForm() {
     formContainer.style.display = 'flex';
-    // Pausar el último video por si acaso
     if (players[currentSceneIndex]) {
         players[currentSceneIndex].pauseVideo();
     }
@@ -456,6 +468,12 @@ async function handleAnswer(event) {
     const value = event.target.dataset.value;
 
     try {
+        // MODIFICACIÓN IMPORTANTE:
+        // Tu fetch usa "http://localhost:3000". Esto NO funcionará en GitHub Pages.
+        // Debes cambiarlo por la URL de tu servidor REAL (cuando lo tengas).
+        // Por ahora, lo comentaré para que no dé un error de "Mixed Content".
+        
+        /*
         const response = await fetch("http://localhost:3000/api/responder", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -463,8 +481,12 @@ async function handleAnswer(event) {
         });
 
         if (!response.ok) throw new Error("Error al enviar datos al servidor");
+        */
+       
+        // Simulación de éxito (borra esto cuando tengas un servidor real)
+        console.log(`✅ Respuesta (simulada): ${key} → ${value}`);
+        await new Promise(resolve => setTimeout(resolve, 300)); // Simula espera de red
 
-        console.log(`✅ Respuesta guardada: ${key} → ${value}`);
 
         event.target.classList.add('selected');
         setTimeout(() => {
@@ -475,7 +497,8 @@ async function handleAnswer(event) {
 
     } catch (error) {
         console.error("❌ Error al guardar respuesta:", error);
-        alert("No se pudo registrar la respuesta. Intenta nuevamente.");
+        // Descomenta esto si usas el fetch real
+        // alert("No se pudo registrar la respuesta. Intenta nuevamente.");
     }
 }
 
